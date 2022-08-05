@@ -1,6 +1,7 @@
 # Indian Census 2011
 
-EDA on Indian Census 2011 using SQL 
+EDA on Indian Census 2011 using SQL
+
 Concepts used:
 - Aggregate functions
 - Joins
