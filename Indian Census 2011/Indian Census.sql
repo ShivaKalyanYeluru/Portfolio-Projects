@@ -223,14 +223,12 @@ FROM
 (SELECT District, State, ROUND(Population/Area_km2,0) populationdensity, rank() over(partition by state order by population/area_km2 desc) rnk FROM joinedtable) r
 WHERE rnk < 4;
 
--- District with highest population in each state
-WITH highestpopulation AS
-(
-SELECT District, State, population, ROW_NUMBER() OVER(PARTITION BY state ORDER BY population DESC) populationrank
-FROM joinedtable
-)
-SELECT District, State, population FROM highestpopulation
-WHERE populationrank = 1;
+-- Districts with highest population in each state
+SELECT State, District, Population FROM joinedtable
+WHERE Population IN
+(SELECT LAST_VALUE(Population) OVER(PARTITION BY state ORDER BY population RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) populationrank
+FROM joinedtable)
+ORDER BY State;
 
 -- Districts contributing to top 10% of the overall population
 WITH contribution AS
