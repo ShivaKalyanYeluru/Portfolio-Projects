@@ -222,3 +222,26 @@ SELECT district, state, populationdensity, rnk
 FROM 
 (SELECT District, State, ROUND(Population/Area_km2,0) populationdensity, rank() over(partition by state order by population/area_km2 desc) rnk FROM joinedtable) r
 WHERE rnk < 4;
+
+-- District with highest population in each state
+WITH highestpopulation AS
+(
+SELECT District, State, population, ROW_NUMBER() OVER(PARTITION BY state ORDER BY population DESC) populationrank
+FROM joinedtable
+)
+SELECT District, State, population FROM highestpopulation
+WHERE populationrank = 1;
+
+-- Districts contributing to top 10% of the overall population
+WITH contribution AS
+(
+SELECT district,state, population, CUME_DIST() OVER(ORDER BY population desc)*100 PercentContribution 
+FROM population
+),
+rollingsum AS
+(
+SELECT *, SUM(PercentContribution) OVER(ORDER BY percentcontribution RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) rollingSum
+FROM contribution
+)
+SELECT District, State, Population FROM rollingsum
+WHERE rollingsum < 10;
