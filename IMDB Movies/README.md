@@ -1,4 +1,4 @@
-# IMDB Movies Data Web Scraping
+# IMDB Movies Data 
 
 Web Scraping project on IMDB website using Python and it's libraries.
 
